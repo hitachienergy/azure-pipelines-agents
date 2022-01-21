@@ -45,7 +45,7 @@ RUN apt-get update \
 && apt-get clean \
 \
 && python3.7 -m pip install --upgrade \
-        pip setuptools wheel lxml \
+        pip setuptools wheel \
 && python3.7 -m pip install --upgrade \
         boto3 \
         jinja2 \
