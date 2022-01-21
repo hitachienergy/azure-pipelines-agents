@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azp-agents
+  labels:
+    app: azp-agent
+spec:
+  clusterIP: None
+  selector:
+    app: azp-agent

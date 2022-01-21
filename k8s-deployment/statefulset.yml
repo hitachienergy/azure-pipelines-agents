@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: azp-agent
+  labels:
+    app: azp-agent
+  namespace: default
+spec:
+  replicas: 2
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: azp-agent
+      version: '20200827'
+  serviceName: azp-agents
+  template:
+    metadata:
+      labels:
+        app: azp-agent
+        version: '20200827'
+    spec:
+      containers:
+      - name: azp-agent
+        image: epiphanyregistry.azurecr.io/azure-pipelines-agent:20200827
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: AZP_AGENT_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: AZP_POOL
+          value: Azure Epiphany cluster - epiphany-build-agents-v2
+        - name: AZP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: azp-pat-token
+              key: AZP_TOKEN
+        - name: AZP_URL
+          value: https://abb-epiphany.visualstudio.com
+        livenessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          timeoutSeconds: 2
+          failureThreshold: 3
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -C Agent.Listener -o state= | grep -v [XZ]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 10Gi # TODO: measure then set
+        volumeMounts:
+        - mountPath: /var/run/docker.sock # to use Docker from within container
+          name: docker-socket
+        - mountPath: /pv
+          name: azure-storage-share
+        - mountPath: /tests-share
+          name: local-share
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+      - name: azure-storage-share
+        persistentVolumeClaim:
+          claimName: epiphany-cluster-volume-claim
+      - name: local-share
+        hostPath:
+          path: /tmp/tests-share
+      imagePullSecrets:
+      - name: epiphanyregistry-creds
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/os: linux
