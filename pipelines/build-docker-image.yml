@@ -11,7 +11,7 @@ variables:
   dockerRegistryServiceConnection: epiphanyregistry.azurecr.io
   imageRepository: azure-pipelines-agent
   containerRegistry: epiphanyregistry.azurecr.io
-  dockerfilePath: azure-pipelines-agent/docker/Dockerfile
+  dockerfilePath: docker-image/Dockerfile
   tag: $[format('{0:yyyyMMdd}', pipeline.startTime)]
 
   # Agent VM image name
