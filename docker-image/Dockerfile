@@ -41,12 +41,24 @@ RUN apt-get update \
         docker-ce-cli \
         python3.7 \
         python3-pip \
+        rubygems \
 && apt-get clean \
 \
 && python3.7 -m pip install --upgrade \
-        pip setuptools wheel \
+        pip setuptools wheel lxml \
 && python3.7 -m pip install --upgrade \
-        boto3 jinja2 pytest python-json-logger ruamel.yaml
+        boto3 \
+        jinja2 \
+        pytest \
+        python-json-logger \
+        ruamel.yaml \
+        pylint \
+        pylint-fail-under \
+        ansible-lint \
+        ansible-lint-junit==0.16 \
+&& gem install \
+        rubocop \
+        rubocop-junit_formatter
 
 WORKDIR /azp
 
