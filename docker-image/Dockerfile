@@ -48,15 +48,15 @@ RUN apt-get update \
 && python3.7 -m pip install --upgrade \
         pip setuptools wheel \
 && python3.7 -m pip install --upgrade \
+        ansible-lint \
+        ansible-lint-junit>=0.16 \
         boto3 \
         jinja2 \
+        pylint \
+        pylint-fail-under \
         pytest \
         python-json-logger \
         ruamel.yaml \
-        pylint \
-        pylint-fail-under \
-        ansible-lint \
-        ansible-lint-junit==0.16 \
 && gem install \
         rubocop \
         rubocop-junit_formatter
