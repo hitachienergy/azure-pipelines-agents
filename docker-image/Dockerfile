@@ -46,7 +46,7 @@ RUN apt-get update \
 && apt-get clean \
 \
 && python3.7 -m pip install --upgrade \
-        pip setuptools wheel \
+        lxml pip setuptools wheel \
 && python3.7 -m pip install --upgrade \
         ansible-lint \
         ansible-lint-junit>=0.16 \
