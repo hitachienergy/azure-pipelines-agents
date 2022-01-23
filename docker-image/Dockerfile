@@ -13,7 +13,7 @@ SHELL ["/bin/bash", "-c"]
 # ppa:deadsnakes/ppa repo contains more recent Python versions packaged for Ubuntu
 # curl and gnupg-agent required to add Docker repo
 # software-properties-common provides add-apt-repository
-# ansible-lint-junit==0.16 version specified because default version installed by pip fails to execute
+# lxml is required to build ansible-lint-junit wheel
 RUN apt-get update \
 && apt-get install --no-install-recommends \
         apt-utils 2> >(grep -v 'debconf: delaying package configuration, since apt-utils is not installed' >&2) \
