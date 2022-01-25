@@ -13,6 +13,7 @@ SHELL ["/bin/bash", "-c"]
 # ppa:deadsnakes/ppa repo contains more recent Python versions packaged for Ubuntu
 # curl and gnupg-agent required to add Docker repo
 # software-properties-common provides add-apt-repository
+# lxml is required to build ansible-lint-junit wheel
 RUN apt-get update \
 && apt-get install --no-install-recommends \
         apt-utils 2> >(grep -v 'debconf: delaying package configuration, since apt-utils is not installed' >&2) \
@@ -41,12 +42,24 @@ RUN apt-get update \
         docker-ce-cli \
         python3.7 \
         python3-pip \
+        rubygems \
 && apt-get clean \
 \
 && python3.7 -m pip install --upgrade \
-        pip setuptools wheel \
+        lxml pip setuptools wheel \
 && python3.7 -m pip install --upgrade \
-        boto3 jinja2 pytest python-json-logger ruamel.yaml
+        ansible-lint \
+        ansible-lint-junit>=0.16 \
+        boto3 \
+        jinja2 \
+        pylint \
+        pylint-fail-under \
+        pytest \
+        python-json-logger \
+        ruamel.yaml \
+&& gem install \
+        rubocop \
+        rubocop-junit_formatter
 
 WORKDIR /azp
 
