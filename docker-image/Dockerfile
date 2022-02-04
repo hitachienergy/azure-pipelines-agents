@@ -11,7 +11,9 @@ RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes
 SHELL ["/bin/bash", "-c"]
 
 # ppa:deadsnakes/ppa repo contains more recent Python versions packaged for Ubuntu
-# curl and gnupg-agent required to add Docker repo
+# pip3.10 is bootstraped from https://bootstrap.pypa.io/ as it's not present in ppa:deadsnakes/ppa
+# curl required to add Docker repo and fetch pip bootstrapping script
+# gnupg-agent required to add Docker repo
 # software-properties-common provides add-apt-repository
 # lxml is required to build ansible-lint-junit wheel
 RUN apt-get update \
@@ -40,14 +42,16 @@ RUN apt-get update \
         netcat \
         \
         docker-ce-cli \
-        python3.7 \
-        python3-pip \
+        python3.10 \
+        python3.10-distutils \
         rubygems \
 && apt-get clean \
 \
-&& python3.7 -m pip install --upgrade \
+&& curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10 \
+\
+&& python3.10 -m pip install --upgrade \
         lxml pip setuptools wheel \
-&& python3.7 -m pip install --upgrade \
+&& python3.10 -m pip install --upgrade \
         ansible-lint \
         ansible-lint-junit>=0.16 \
         boto3 \
