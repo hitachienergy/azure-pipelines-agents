@@ -63,6 +63,8 @@ RUN apt-get update \
                 python-json-logger \
                 ruamel.yaml ;\
         done \
+&& ln -sf $(which python3.10) /usr/bin/python \
+&& ln -sf $(which python3.10) $(which python3) \
 \
 && gem install \
         rubocop \
