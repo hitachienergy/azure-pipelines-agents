@@ -42,26 +42,28 @@ RUN apt-get update \
         netcat \
         \
         docker-ce-cli \
-        python3.10 \
-        python3.10-distutils \
+        python3.{7,10}{,-distutils} \
         rubygems \
 && apt-get clean \
 \
-&& curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10 \
+&& for version in 3.7 3.10 ;\
+        do \
+        curl -sS https://bootstrap.pypa.io/get-pip.py | python${version} \
+        && python${version} -m pip install --upgrade \
+                lxml pip setuptools wheel \
+        && python${version} -m pip install --upgrade \
+                ansible-lint \
+                ansible-lint-junit\>=0.16 \
+                boto3 \
+                jinja2 \
+                junit-xml \
+                pylint \
+                pylint-fail-under \
+                pytest \
+                python-json-logger \
+                ruamel.yaml ;\
+        done \
 \
-&& python3.10 -m pip install --upgrade \
-        lxml pip setuptools wheel \
-&& python3.10 -m pip install --upgrade \
-        ansible-lint \
-        ansible-lint-junit>=0.16 \
-        boto3 \
-        jinja2 \
-        junit-xml \
-        pylint \
-        pylint-fail-under \
-        pytest \
-        python-json-logger \
-        ruamel.yaml \
 && gem install \
         rubocop \
         rubocop-junit_formatter
