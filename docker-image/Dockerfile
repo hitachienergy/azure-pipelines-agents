@@ -56,6 +56,7 @@ RUN apt-get update \
         ansible-lint-junit>=0.16 \
         boto3 \
         jinja2 \
+        junit-xml \
         pylint \
         pylint-fail-under \
         pytest \
