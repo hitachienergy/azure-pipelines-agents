@@ -59,6 +59,7 @@ RUN apt-get update \
                 junit-xml \
                 pylint \
                 pylint-fail-under \
+                pylint-junit \
                 pytest \
                 python-json-logger \
                 ruamel.yaml ;\
