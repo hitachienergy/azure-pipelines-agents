@@ -30,14 +30,16 @@ create_symlink() {
   ln -s "$1" "$2"
 }
 
-# --- Python 3.10  ---
+# Register python interpreters to be usable by Azure DevOps
+for MINOR_VERSION in 3.7 3.10
+  do
+    # Version number should follow the format of 1.2.3
+    PYTHON_VERSION=$(get_package_version python${MINOR_VERSION}  | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+')
 
-# Version number should follow the format of 1.2.3
-PYTHON_VERSION=$(get_package_version python3.10  | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+')
+    create_directory "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64"
+    create_symlink "$(which python${MINOR_VERSION})" "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64/python"
+    create_symlink "$(which python${MINOR_VERSION})" "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64/python3"
 
-create_directory "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64"
-create_symlink /usr/bin/python3.10  "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64/python"
-create_symlink /usr/bin/python3.10  "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64/python3"
-
-# Mark Python 3.10.x as installed
-create_empty_file "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64.complete"
+    # Mark specific Python version as installed
+    create_empty_file "${AGENT_TOOLSDIRECTORY}/Python/${PYTHON_VERSION}/x64.complete"
+  done
