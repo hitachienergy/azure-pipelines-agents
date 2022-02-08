@@ -16,6 +16,9 @@ SHELL ["/bin/bash", "-c"]
 # gnupg-agent required to add Docker repo
 # software-properties-common provides add-apt-repository
 # lxml is required to build ansible-lint-junit wheel
+# Though all python/ruby dependencies are managed in this image, only those common to all pipelines must
+# remain in this ContainerFile after a migration to yaml pipelines is implemented. Their temporary
+# inclusion in this image is sub-optimal in terms of build time and resource usage.
 RUN apt-get update \
 && apt-get install --no-install-recommends \
         apt-utils 2> >(grep -v 'debconf: delaying package configuration, since apt-utils is not installed' >&2) \
@@ -52,7 +55,7 @@ RUN apt-get update \
         && python${version} -m pip install --upgrade \
                 lxml pip setuptools wheel \
         && python${version} -m pip install --upgrade \
-                ansible-lint \
+                ansible-lint[community,yamllint] \
                 ansible-lint-junit\>=0.16 \
                 boto3 \
                 jinja2 \
