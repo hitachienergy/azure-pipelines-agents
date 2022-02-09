@@ -1,6 +1,6 @@
 # Based on: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux
 
-FROM ubuntu:bionic-20200807
+FROM ubuntu:bionic-20220128
 
 # To make it easier for build and release pipelines to run apt-get,
 # configure apt to not require confirmation (assume the -y argument by default)
@@ -11,9 +11,14 @@ RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes
 SHELL ["/bin/bash", "-c"]
 
 # ppa:deadsnakes/ppa repo contains more recent Python versions packaged for Ubuntu
-# curl and gnupg-agent required to add Docker repo
+# pip3.10 is bootstraped from https://bootstrap.pypa.io/ as it's not present in ppa:deadsnakes/ppa
+# curl required to add Docker repo and fetch pip bootstrapping script
+# gnupg-agent required to add Docker repo
 # software-properties-common provides add-apt-repository
 # lxml is required to build ansible-lint-junit wheel
+# Though all python/ruby dependencies are managed in this image, only those common to all pipelines must
+# remain in this ContainerFile after a migration to yaml pipelines is implemented. Their temporary
+# inclusion in this image is sub-optimal in terms of build time and resource usage.
 RUN apt-get update \
 && apt-get install --no-install-recommends \
         apt-utils 2> >(grep -v 'debconf: delaying package configuration, since apt-utils is not installed' >&2) \
@@ -40,23 +45,30 @@ RUN apt-get update \
         netcat \
         \
         docker-ce-cli \
-        python3.7 \
-        python3-pip \
+        python3.{7,10}{,-distutils} \
         rubygems \
 && apt-get clean \
 \
-&& python3.7 -m pip install --upgrade \
-        lxml pip setuptools wheel \
-&& python3.7 -m pip install --upgrade \
-        ansible-lint \
-        ansible-lint-junit>=0.16 \
-        boto3 \
-        jinja2 \
-        pylint \
-        pylint-fail-under \
-        pytest \
-        python-json-logger \
-        ruamel.yaml \
+&& for version in 3.7 3.10 ;\
+        do \
+        curl -sS https://bootstrap.pypa.io/get-pip.py | python${version} \
+        && python${version} -m pip install --upgrade \
+                lxml pip setuptools wheel \
+        && python${version} -m pip install --upgrade \
+                ansible-lint[community,yamllint] \
+                ansible-lint-junit\>=0.16 \
+                boto3 \
+                jinja2 \
+                pylint \
+                pylint-fail-under \
+                pylint-junit \
+                pytest \
+                python-json-logger \
+                ruamel.yaml ;\
+        done \
+&& ln -sf $(which python3.10) /usr/bin/python \
+&& ln -sf $(which python3.10) $(which python3) \
+\
 && gem install \
         rubocop \
         rubocop-junit_formatter
