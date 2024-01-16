@@ -11,17 +11,17 @@ spec:
   selector:
     matchLabels:
       app: azp-agent
-      version: '20220208'
+      version: '20240116'
   serviceName: azp-agents
   template:
     metadata:
       labels:
         app: azp-agent
-        version: '20220208'
+        version: '20240116'
     spec:
       containers:
       - name: azp-agent
-        image: epiphanyregistry.azurecr.io/azure-pipelines-agent:20220208
+        image: epiphanyregistry.azurecr.io/azure-pipelines-agent:20240116
         imagePullPolicy: IfNotPresent
         env:
         - name: AZP_AGENT_NAME
