@@ -1,6 +1,6 @@
 # Based on: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux
 
-FROM ubuntu:bionic-20220128
+FROM ubuntu:22.04
 
 # To make it easier for build and release pipelines to run apt-get,
 # configure apt to not require confirmation (assume the -y argument by default)
@@ -35,18 +35,21 @@ RUN apt-get update \
 && apt-get update \
 && apt-get install --no-install-recommends \
         ca-certificates \
-        curl \
-        jq \
+        docker-ce-cli \
         git \
         iputils-ping \
+        jq \
         libcurl4 \
-        libicu60 \
+        libicu70 \
         libunwind8 \
         netcat \
-        \
-        docker-ce-cli \
+        net-tools \
         python3.{7,10}{,-distutils} \
         rubygems \
+        unzip \
+        vim \
+        wget \
+        zip \
 && apt-get clean \
 \
 && for version in 3.7 3.10 ;\
